@@ -1,5 +1,6 @@
+import sys
+from conf import *
 import docker
-
 
 
 class dockerManager:
@@ -14,10 +15,16 @@ class dockerManager:
 		client (docker.client.DockerClient): The client is used for interfacing with docker
 		containerNames (list): List of all container names in the scenario chosen
 
+	Raises:
+		Exception: POLAR_SCENARIO is not an integer
+
 	''' 
 
 
-	def __init__(self, polarEnv):
+	def __init__(self, polarEnv=POLAR_SCENARIO):
+
+		if not isinstance(polarEnv, int):
+			raise Exception("POLAR_SCENARIO defined in conf.py must be an integer")
 
 		self.polarEnv = str(polarEnv)
 		self.client = docker.from_env()

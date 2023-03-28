@@ -6,7 +6,7 @@ from dockerManager import dockerManager
 def main():
 
 	
-	test = dockerManager(POLAR_SCENARIO)
+	test = dockerManager()
 	print(test.containerNames)
 
 	command = test.runCommand('polar-n3-backend1', 'whoami')
