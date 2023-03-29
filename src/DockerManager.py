@@ -1,9 +1,9 @@
-import sys
 from conf import *
+from nodes import *
 import docker
 
 
-class dockerManager:
+class DockerManager:
 	'''
 	The dockerManager object contains info about the docker actual environment and running containers for the scenario specified
 	
@@ -26,9 +26,10 @@ class dockerManager:
 		if not isinstance(polarEnv, int):
 			raise Exception("POLAR_SCENARIO defined in conf.py must be an integer")
 
-		self.polarEnv = str(polarEnv)
-		self.client = docker.from_env()
-		self.containerNames = self.__takeContainerNames()
+		self.__polarEnv = str(polarEnv)
+		self.__client = docker.from_env()
+		self.__containerNames = self.__takeContainerNames()
+		self.nodes = self.__getNodes()
 		
 
 	def __takeContainerNames(self):
@@ -41,13 +42,14 @@ class dockerManager:
 			list: container names
 		'''
 
-		container_list = self.client.containers.list()
+		container_list = self.__client.containers.list()
 		res = []
 		for i in range(len(container_list)):
-			name = self.client.containers.get(container_list[i].id).attrs['Name']
+			name = self.__client.containers.get(container_list[i].id).attrs['Name']
+			
 			
 			#avoid taking containers from other polar scenarios
-			if name[1:9] == 'polar-n' + self.polarEnv:
+			if name[1:9] == 'polar-n' + self.__polarEnv:
 				res.append(name[1:])
 
 		return res
@@ -68,9 +70,34 @@ class dockerManager:
 			docker.models.containers.Container: container object
 		'''
 
-		if name not in self.containerNames:
+		if name not in self.__containerNames:
 			raise Exception("Container name must be in the containerNames list")
-		return self.client.containers.get(name)
+		return self.__client.containers.get(name)
+
+
+	def __getNodes(self):
+		'''
+		Create all node objects with their names and implementation versions
+
+		Returns:
+			list Nodes.Nodes: a list with all Node objects 
+		'''
+
+		res = []
+		for i in self.__containerNames:
+			nodeImplmentation = self.__getContainer(i).attrs['Args'][0]
+
+			if nodeImplmentation == 'lightningd':
+				node = CLightning(self, i, nodeImplmentation)
+			elif nodeImplmentation == 'lnd':
+				node = LND(self, i, nodeImplmentation)
+			elif nodeImplmentation == 'bitcoind':
+				node = BitcoinCore(self, i, nodeImplmentation)
+			else:
+				raise Exception(nodeImplmentation + " is not a valid node implementation")
+			res.append(node)
+
+		return res
 
 
 	def runCommand(self, name, command):
@@ -81,23 +108,14 @@ class dockerManager:
 			name (str): container name
 			command (str, list): command or commands to be executed
 
-		Raises:
-			Exception: Command is not in the container $PATH variable
-			Exception: Command does not exist in the bitcoin-cli command catalog
-
 		Returns:
 			str: output of the command
+			int: exit code of the command
 		'''
 
 		container = self.__getContainer(name)
 		commandResult = container.exec_run(command)
 		
-		if commandResult.exit_code == 126:
-			raise Exception("Command not found in the container $PATH")
-		
-		elif commandResult.exit_code == 89:
-			raise Exception("Command not found in the bitcoin-cli command list")
-		
-
 		commandOutput = commandResult.output
-		return commandOutput.decode()
+		
+		return commandOutput.decode(), commandResult.exit_code
