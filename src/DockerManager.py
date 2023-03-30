@@ -100,7 +100,7 @@ class DockerManager:
 		return res
 
 
-	def runCommand(self, name, command):
+	def runCommand(self, name, command, user):
 		'''
 		Run a defined command into the container specified
 
@@ -114,7 +114,7 @@ class DockerManager:
 		'''
 
 		container = self.__getContainer(name)
-		commandResult = container.exec_run(command)
+		commandResult = container.exec_run(command,user=user)
 		
 		commandOutput = commandResult.output
 		

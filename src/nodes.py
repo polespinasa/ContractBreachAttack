@@ -26,7 +26,7 @@ class Node:
 		self.implementation = implementation
 
 
-	def forceLinuxCommand(self, command):
+	def forceLinuxCommand(self, command, user=''):
 		'''
 		Run a linux command inside the node docker
 
@@ -42,7 +42,7 @@ class Node:
 			string: output of that command
 		'''
 
-		res, exit_code = self.manager.runCommand(self.name, command)
+		res, exit_code = self.manager.runCommand(self.name, command, user)
 
 		if exit_code == 126:
 			raise Exception("Command not found in the container $PATH")
@@ -73,26 +73,27 @@ class CLightning(Node):
 
 		super(CLightning, self).__init__(manager, name, implementation)
 
-		self.__basicCommand = 'curl localhost:8080/v1/'
-		self.__macaroon = self.__getMacaroon()
+		self.__basicCommand = 'lightning-cli --network=regtest '
+		self.id = self.__getID()
 
-	def __getMacaroon(self):
-		'''
-		gets macaroon and parses it into the correct format
 	
+	def __getID(self):
+		'''
+		get node ID
+
+		
 		Args:
 
 		Returns:
-			str: macaroon in hex format
+			string: ID in string format
 
-		''' 
+		'''
 
-		import binascii
-		with open(MACAROON_PATH, 'rb') as f:
-			macaroon = binascii.hexlify(f.read()).decode()
+		command = self.__basicCommand + 'getinfo'
+		res = json.loads(self.forceLinuxCommand(command, CLIGHTNING_USER))
+		
+		return res['id']
 
-		return str(macaroon)
-	
 
 	def getPeersIds(self):
 		'''
@@ -101,30 +102,39 @@ class CLightning(Node):
 		Args:
 
 		Returns:
-			dict: a dict with all peer ids and node alias as keys
+			list: list with all peer IDs
 
 		''' 
-		command = self.__basicCommand + 'peer/listpeers -s --header "Content-Type: application/json" --header "encodingtype: hex" --header "macaroon: '+ self.__macaroon + '"'
+		command = self.__basicCommand + 'listchannels'
 		
-		res = json.loads(self.forceLinuxCommand(command))
+		out = self.forceLinuxCommand(command,user=CLIGHTNING_USER)
+		channels = json.loads(out)['channels']
+		res = []
+		for channel in channels:
+			if channel['source'] != self.id and channel['source'] not in res:
+				res.append(channel['source'])
+			elif channel['destination'] != self.id and channel['destination'] not in res:
+				res.append(channel['destination'])
 
-		peersId = {}
-		for peer in res:
-			peersId[peer['alias']] = peer['id']
+		return res
+
+
+	def signLastTx(self, peerID):
+		'''
+		sign last transaction from a channel specified
+
+		Args:
+			peerID str: ID of the channel peer
+
+		Return:
+			str: raw transaction signed
+		'''
+
+		command = self.__basicCommand + 'dev-sign-last-tx ' + peerID
+		out = self.forceLinuxCommand(command, user=CLIGHTNING_USER)
+		res = json.loads(out)['tx']
 		
-		return peersId
-
-
-	######################## NOT WORKING YET #####################
-	def signLastTx(self):
-
-
-		data = '{"method": "getinfo"}'
-		command = self.__basicCommand + 'rpc -s -X POST -d "method=getinfo" -v --header "Content-Type: application/json" --header "encodingtype: hex" --header "macaroon: ' + self.__macaroon + '"'
-		print(self.forceLinuxCommand(command))
-		exit(1)
-		res = json.loads(self.forceLinuxCommand(command))
-		print(res)
+		return res
 		
 
 
@@ -190,7 +200,7 @@ class BitcoinCore(Node):
 			raw (str): raw transaction to braodcast in string format
 
 		Returns:
-			str: resposta del node
+			str: transaction hash in hex
 			
 		'''
 

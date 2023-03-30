@@ -9,8 +9,14 @@ NODE_LIST = DOCKER_MANAGER.nodes
 
 def main():
 
-	#USE NODE_LIST to interact with the different nodes
 
+
+	#THIS MAIN IS BEING USED FOR TESTING PURPOSES
+
+
+
+	#USE NODE_LIST to interact with the different nodes
+	rawTX = ''
 	for i in NODE_LIST:
 
 		#result = i.forceLinuxCommand('ls /home')
@@ -26,15 +32,24 @@ def main():
 			print(result)
 		'''
 
-
-		#TEST C-LIGHTNING CALLS -- WORKING but
+		peerId = ''
+		#TEST C-LIGHTNING CALLS -- WORKING
 		if i.implementation == 'lightningd':
 			result = i.getPeersIds()
-			print(result)
+			peerId = result[0]
 
-		#TEST C-LIGHTNING CALLS RPC -- NOT WORKING
+		#TEST C-LIGHTNING CALLS RPC -- WORKING
 		if i.implementation == 'lightningd':
-			result = i.signLastTx()
+			result = i.signLastTx(peerId)
+			#print(result)
+			rawTX = result
+			
+			
+	#TEST BROADCAST COMMITMENT TRANSACTION -- WORKING
+	for i in NODE_LIST:
+		if i.implementation == 'bitcoind':
+			print(rawTX)
+			result = i.sendRawTransaction(rawTX)
 			print(result)
 
 
