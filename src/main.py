@@ -16,7 +16,7 @@ def main():
 
 
 	#USE NODE_LIST to interact with the different nodes
-	rawTX = ''
+	#rawTX = ''
 	for i in NODE_LIST:
 
 		#result = i.forceLinuxCommand('ls /home')
@@ -32,6 +32,7 @@ def main():
 			print(result)
 		'''
 
+		'''
 		peerId = ''
 		#TEST C-LIGHTNING CALLS -- WORKING
 		if i.implementation == 'lightningd':
@@ -44,14 +45,37 @@ def main():
 			#print(result)
 			rawTX = result
 			
-			
+		
+
+		#TEST C-LIGHTING PAY BOLT11 -- WORKING
+		bolt11 = 'lnbcrt500u1pjzsnsmpp55c33agyhl835j4th2ffl6hygx3usj3e548tr8kgr0njm547jvl3sdqqcqzpgxqyz5vqsp5t99v9yyefvdapk6ytwymnev0arp5cj4h6fgkxcc3s8rvxyclmdas9qyyssq8cwmla8zmsr8xrkpu5wc8wfsluk69zuelhq09scsewqy4u2kpk754lfgs0sj33e0w097fankvxgtmep9qe2dspvmjmcyj9kg0uymnfsqvztru0'
+		if i.implementation == 'lightningd':
+			result = i.payInvoice(bolt11)
+			print(result)
+		'''
+
+		'''
+		#TEST C-LIGHTING CREATION BOLT11 -- WORKING
+		if i.implementation == 'lightningd':
+			result = i.createInvoice(1000)
+			print(result)
+			print('\n')
+			result = i.createInvoice(5)
+			print(result)
+			print('\n')
+			result = i.createInvoice(0)
+			print(result)
+		'''
+
+
+	'''		
 	#TEST BROADCAST COMMITMENT TRANSACTION -- WORKING
 	for i in NODE_LIST:
 		if i.implementation == 'bitcoind':
 			print(rawTX)
 			result = i.sendRawTransaction(rawTX)
 			print(result)
-
+	'''
 
 
 

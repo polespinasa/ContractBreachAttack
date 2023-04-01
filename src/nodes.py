@@ -75,6 +75,7 @@ class CLightning(Node):
 
 		self.__basicCommand = 'lightning-cli --network=regtest '
 		self.id = self.__getID()
+		self.__invoiceLabel = '0'
 
 	
 	def __getID(self):
@@ -135,7 +136,51 @@ class CLightning(Node):
 		res = json.loads(out)['tx']
 		
 		return res
+
+
+	def payInvoice(self, bolt11):
+		'''
+		Pay a bolt11 invoice
+
+		Args:
+			bolt11 str: Bolt11 invoice from the requester
+
+		Return:
+			bool: true if payment completed
+		'''
+
+		command = self.__basicCommand + 'pay ' + bolt11
+		out = self.forceLinuxCommand(command, user=CLIGHTNING_USER)
+		res = json.loads(out)['status']
+
+		return res == 'complete'
+
+
+	def createInvoice(self, ammount):
+		'''
+		Create bolt 11 invoice
+
+		Args:
+			ammount int: ammount to pay in satoshis
+
+		Raises:
+			Exception: if ammount in milisatoshis is equal or less than 0
+
+		Return:
+			str: bolt11 invoice
+		'''
 		
+		if ammount == 0:
+			raise Exception('Ammount must be bigger than 0')
+
+		command = self.__basicCommand + 'invoice ' + str(ammount*1000) + ' ' + self.__invoiceLabel + ' simulationInvoice'
+		output = self.forceLinuxCommand(command, user=CLIGHTNING_USER)
+		res = json.loads(output)['bolt11']
+
+		#increment label for the next invoice as has to be unique
+		self.__invoiceLabel = str(int(self.__invoiceLabel) + 1)
+
+		return res
 
 
 
