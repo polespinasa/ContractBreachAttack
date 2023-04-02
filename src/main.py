@@ -67,6 +67,21 @@ def main():
 			print(result)
 		'''
 
+		'''
+		#TEST LND CREATION BOLT 11 -- working
+		if i.implementation == 'lnd':
+			result = i.createInvoice(100000)
+			print(result)
+		'''
+
+		'''
+		#TEST LND PAYMENT BOLT 11 -- working
+		bolt11 = 'lnbcrt1m1pjzj5mfsp56eqedhjffut76apfpcpddwpdh4kftradd7cz5v4s2e9vsdx5hqdspp5x0lmjr2cpa6hh7w4s2mjzxu3ktkjnyf9w6a2j3gyqzmzfsmh2kcsdpz2phkcctjypykuan0d93k2grxdaezqcn0vgxqyjw5qcqp29qyysgqsh26lkpg7zafwz645ql0qx3hdsmvqwqastx0j37p2gfx7y8h0fljfj2kmd3hp7l56hg2j0d0z2syueruf972h4kr3ulagj06es55y8qpg6c24d'
+		if i.implementation == 'lnd':
+			result = i.payInvoice(bolt11)
+			print(result)
+		'''
+
 
 	'''		
 	#TEST BROADCAST COMMITMENT TRANSACTION -- WORKING
