@@ -26,7 +26,7 @@ def main():
 	
 	# 2. Initialize the results file
 	date = datetime.now()
-	file_name = str(date.day) + '_' + str(date.month) + '_' + str(date.hour) + str(date.minute) + str(date.second) + '.txt'
+	file_name = RESULTS_PATH + str(date.day) + '_' + str(date.month) + '_' + str(date.hour) + str(date.minute) + str(date.second) + '.txt'
 	f = open(file_name, "w")
 	f.write("SIMULTAION TIME " + str(date) +'\n')
 
