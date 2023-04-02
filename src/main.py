@@ -48,7 +48,7 @@ def main():
 
 	victimBalance += 100000
 	maliciousBalance -= 100000
-	f.write("\n\nMalicious pays 100k sats to victim")
+	f.write("\n\nMalicious pays 100k sats to victim\n")
 	f.write("  Victim balance: " + str(victimBalance) + "\n")
 	f.write("  Malicious balance: " + str(maliciousBalance) + "\n")
 
@@ -61,7 +61,7 @@ def main():
 
 	victimBalance -= 50000
 	maliciousBalance += 50000
-	f.write("\n\nVictim pays 50k sats to malicious")
+	f.write("\n\nVictim pays 50k sats to malicious\n")
 	f.write("  Victim balance: " + str(victimBalance) + "\n")
 	f.write("  Malicious balance: " + str(maliciousBalance) + "\n")	
 
@@ -79,7 +79,7 @@ def main():
 
 	victimBalance += 40000
 	maliciousBalance -= 40000
-	f.write("\n\nMalicious pays 50k sats to victim")
+	f.write("\n\nMalicious pays 40k sats to victim\n")
 	f.write("  Victim balance: " + str(victimBalance) + "\n")
 	f.write("  Malicious balance: " + str(maliciousBalance) + "\n")	
 
