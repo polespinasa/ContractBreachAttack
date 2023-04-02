@@ -89,6 +89,7 @@ def main():
 	f.write("  Commitment transaction in hex: \n  " + res)
 
 
+	f.close()
 
 
 if __name__ == "__main__":
