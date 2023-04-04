@@ -15,7 +15,7 @@ class Node:
 	Attributes:
 		manager (dockerManager): The manager is the dockerManager object that interact directly with the docker container 
 		name (string): Node name following Polar name types
-		implementation (string): description of the node implementation, can bb; lightningd, lnd or bitcoind
+		implementation (string): description of the node implementation, can be; lightningd, lnd or bitcoind
 
 	''' 
 
