@@ -84,8 +84,8 @@ def main():
 
 	#7. Malicious broadcast previous state
 	res = bitcoin_core.sendRawTransaction(commitmentTx)
-	f.write("\n\nMalicious broadcast previous state")
-	f.write("  Commitment transaction in hex: \n  " + res)
+	f.write("\n\nMalicious broadcast previous state\n")
+	f.write("  Commitment transaction hash in hex: \n  " + res)
 
 
 	#8. Mine 6 blocks to get the last tx confirmed
