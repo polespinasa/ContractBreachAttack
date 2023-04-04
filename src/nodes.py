@@ -1,5 +1,6 @@
 import json
 from conf import *
+from time import time
 
 
 class Node:
@@ -75,7 +76,7 @@ class CLightning(Node):
 
 		self.__basicCommand = 'lightning-cli --network=regtest '
 		self.id = self.__getID()
-		self.__invoiceLabel = '0'
+		self.__invoiceLabel = str(time()).replace('.','') #Use timestamp as this has to be unique
 
 	
 	def __getID(self):
@@ -261,7 +262,7 @@ class BitcoinCore(Node):
 		super(BitcoinCore, self).__init__(manager, name, implementation)
 
 		self.__basicCommand = 'bitcoin-cli -regtest -rpcport=18443 -rpcuser=polaruser -rpcpassword=polarpass '
-
+		self.defaultAddr = self.getNewAddr()
 
 	def getBlockchainInfo(self):
 		'''
@@ -297,4 +298,53 @@ class BitcoinCore(Node):
 		res = self.forceLinuxCommand(command)
 		return res
 
+	def getNewAddr(self):
+		'''
+		generate a new bitcoin address
 
+		Returns:
+			str: new address
+		'''
+
+		command = self.__basicCommand + 'getnewaddress'
+		res = self.forceLinuxCommand(command)
+
+		return res.strip()
+
+	def mineNewBlocks(self, numBlocks=1, minerAddr=None):
+		'''
+		mine n num of new blocks
+
+		Args:
+			numBlocks (int/float): number of blocks to mine, 1 by default
+			minerAddr (str): address that will be used to claim the block reward
+		Raises:
+			Exception: numBlocks is lower than 1
+			Exception: numBlocks has decimals
+			Exception: minerAddr is not a string
+
+		Returns:
+			list: list with the hashes of the mined blocks
+		'''
+
+		if numBlocks < 1:
+			raise Exception("numBlocks to mine must minimum 1")
+		if isinstance(numBlocks, float) and not numBlocks.is_integer():
+			raise Exception("numBlocks must be an integer or a float with no decimals")
+
+		if minerAddr == None:
+			minerAddr = self.defaultAddr
+
+		if not isinstance(minerAddr, str):
+			raise Exception("minerAddr type must be a string")
+
+
+		
+		command = self.__basicCommand + 'generatetoaddress ' + str(numBlocks) + ' ' + minerAddr
+		res = self.forceLinuxCommand(command)
+		
+		
+		
+		res = res.replace(' ', '').replace('\n','').replace('"','').replace('[','').replace(']','')
+		res = list(map(str, res.split(',')))
+		return res

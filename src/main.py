@@ -22,7 +22,6 @@ def main():
 		else:
 			bitcoin_core = i
 
-
 	
 	# 2. Initialize the results file
 	date = datetime.now()
@@ -89,8 +88,13 @@ def main():
 	f.write("  Commitment transaction in hex: \n  " + res)
 
 
-	f.close()
+	#8. Mine 6 blocks to get the last tx confirmed
+	blocksHahs = bitcoin_core.mineNewBlocks(10)
+	f.write("\n\nBlocks hashes\n")
+	f.write('\n'.join(blocksHahs))
 
+	f.close()
+	
 
 if __name__ == "__main__":
 	main()

@@ -1,5 +1,5 @@
 ####GENERAL CONFIGURATION####
-POLAR_SCENARIO = 3
+POLAR_SCENARIO = 1
 RESULTS_PATH = './simulationResults/'
 
 
