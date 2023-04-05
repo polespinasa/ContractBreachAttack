@@ -63,10 +63,15 @@ class CLightning(Node):
 	The CLightning object is used to interact with CLightning node implementations
 	
 	Args:
-		Args used for Node Class
+		manager (dockerManager): The manager is the dockerManager object that interact directly with the docker container 
+		name (string): Node name following Polar name types
+		implementation (string): description of the node implementation, can be; lightningd, lnd or bitcoind
+
 
 	Attributes:
-		Attributes from Node Class
+		__basicCommand (str): basic command to use CLighting node
+		id (str): pubkey identifier of the node
+		__invoiceLabe (str): Unique label to be used when creating invoices
 
 	''' 
 
@@ -188,18 +193,56 @@ class CLightning(Node):
 class LND(Node):
 	'''
 	The LND object is used to interact with LND node implementations
-	cd 
+	
 	Args:
-		Args used for Node Class
+		manager (dockerManager): The manager is the dockerManager object that interact directly with the docker container 
+		name (string): Node name following Polar name types
+		implementation (string): description of the node implementation, can be; lightningd, lnd or bitcoind
+
 
 	Attributes:
-		Attributes from Node Class
+		__basicCommand (str): basic command to use CLighting node
+		id (str): pubkey identifier of the node
 
 	''' 
+
 	def __init__(self, manager, name, implementation):
 
 		super(LND, self).__init__(manager, name, implementation)
 		self.__basicCommand = 'lncli --network regtest '
+		self.id = self.__getID()
+
+
+	def __getID(self):
+		'''
+		get node ID
+
+		
+		Args:
+
+		Returns:
+			string: ID in string format
+
+		'''
+
+		command = self.__basicCommand + 'getinfo'
+		output = self.forceLinuxCommand(command, user=LND_USER)
+		res = json.loads(output)['identity_pubkey']
+
+		return res
+
+	def getFundingTransactionID(self):
+		'''
+
+		Get funding transaction ID
+		
+		'''
+
+		command = self.__basicCommand + 'listchannels'
+		output = self.forceLinuxCommand(command, user=LND_USER)
+		res = json.loads(output)['channels'][0]['channel_point']
+
+		return res
 
 
 	def createInvoice(self, ammount):
@@ -251,12 +294,16 @@ class BitcoinCore(Node):
 	The BitcoinCore object is used to interact with BitcoinCore node implementations
 	
 	Args:
-		Args used for Node Class
+		manager (dockerManager): The manager is the dockerManager object that interact directly with the docker container 
+		name (string): Node name following Polar name types
+		implementation (string): description of the node implementation, can be; lightningd, lnd or bitcoind
+
 
 	Attributes:
-		Attributes from Node Class
+		__basicCommand (str): basic command to use CLighting node
+		defaultAddr (str): default address to claim block mining rewards
+	'''
 
-	''' 
 	def __init__(self, manager, name, implementation):
 
 		super(BitcoinCore, self).__init__(manager, name, implementation)
@@ -280,6 +327,23 @@ class BitcoinCore(Node):
 		jsonres = json.loads(res)
 
 		return jsonres
+
+
+	def getRawTransaction(self, txid):
+		'''
+		get raw transaction given a transaction id
+
+		args:
+			txid (str): id of the transaction
+
+		returns:
+			str: raw transaction
+		'''
+
+		command = self.__basicCommand + 'getrawtransaction ' + txid
+		output = self.forceLinuxCommand(command)
+
+		return output.strip()
 
 
 	def sendRawTransaction(self, raw):

@@ -7,6 +7,11 @@ from datetime import datetime
 
 DOCKER_MANAGER = DockerManager()
 NODE_LIST = DOCKER_MANAGER.nodes
+DATE = datetime.now()
+FOLDER = RESULTS_PATH + str(DATE.day) + '_' + str(DATE.month) + '_' + str(DATE.hour) + str(DATE.minute) + str(DATE.second)
+import os
+os.mkdir(FOLDER)
+
 
 def main():
 
@@ -22,12 +27,15 @@ def main():
 		else:
 			bitcoin_core = i
 
+	# 2. Get Funding Transaction id and raw
+
+	fundingTransactionID = victim.getFundingTransactionID()
+	fundingTransactionRAW = bitcoin_core.getRawTransaction(fundingTransactionID[:-2])
 	
 	# 2. Initialize the results file
-	date = datetime.now()
-	file_name = RESULTS_PATH + str(date.day) + '_' + str(date.month) + '_' + str(date.hour) + str(date.minute) + str(date.second) + '.txt'
+	file_name = FOLDER + '/results.txt'
 	f = open(file_name, "w")
-	f.write("SIMULTAION TIME " + str(date) +'\n')
+	f.write("SIMULTAION TIME " + str(DATE) +'\n')
 
 
 	### MAYBE CREATE A CLASS THAT DOES ALL THIS JOB AUTOMATICALLY
