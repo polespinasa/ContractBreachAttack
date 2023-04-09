@@ -8,3 +8,7 @@ CLIGHTNING_USER = 'clightning'
 
 ####LND CONFIGURATION####
 LND_USER = 'lnd'
+
+
+####ECLAIR CONFIGURATION####
+ECLAIR_USER = 'eclair'

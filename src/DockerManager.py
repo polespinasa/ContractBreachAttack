@@ -93,9 +93,13 @@ class DockerManager:
 				node = LND(self, i, nodeImplmentation)
 			elif nodeImplmentation == 'bitcoind':
 				node = BitcoinCore(self, i, nodeImplmentation)
+			elif nodeImplmentation == 'polar-eclair':
+				node = Eclair(self, i, nodeImplmentation)
 			else:
 				raise Exception(nodeImplmentation + " is not a valid node implementation")
+
 			res.append(node)
+
 
 		return res
 
