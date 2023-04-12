@@ -85,8 +85,8 @@ def LND():
 
 
 	# 5. Malicious save this commitment transaction
-	commitmentTx = malicious.signLastTx(peerId)
-	f.write("  Commitment raw TX: \n   " + commitmentTx)
+	fraudCommitmentTx = malicious.signLastTx(peerId)
+	f.write("  Commitment raw TX: \n   " + fraudCommitmentTx)
 
 
 	#6. Malicous pays 40k sats to victim
@@ -105,7 +105,7 @@ def LND():
 	f.write("  Commitment raw TX: \n   " + commitmentTx)
 
 	#7. Malicious broadcast previous state
-	res = bitcoin_core.sendRawTransaction(commitmentTx)
+	res = bitcoin_core.sendRawTransaction(fraudCommitmentTx)
 	f.write("\n\nMalicious broadcast previous state\n")
 	f.write("  Commitment transaction hash in hex: \n  " + res)
 
@@ -190,8 +190,8 @@ def CLightning():
 
 
 	# 5. Malicious save this commitment transaction
-	commitmentTx = malicious.signLastTx(peerId)
-	f.write("  Commitment raw TX: \n   " + commitmentTx)
+	fraudCommitmentTx = malicious.signLastTx(peerId)
+	f.write("  Commitment raw TX: \n   " + fraudCommitmentTx)
 
 
 	#6. Malicous pays 40k sats to victim
@@ -210,7 +210,7 @@ def CLightning():
 	f.write("  Commitment raw TX: \n   " + commitmentTx)
 
 	#7. Malicious broadcast previous state
-	res = bitcoin_core.sendRawTransaction(commitmentTx)
+	res = bitcoin_core.sendRawTransaction(fraudCommitmentTx)
 	f.write("\n\nMalicious broadcast previous state\n")
 	f.write("  Commitment transaction hash in hex: \n  " + res)
 
@@ -294,8 +294,8 @@ def Eclair():
 
 
 	# 5. Malicious save this commitment transaction
-	commitmentTx = malicious.signLastTx(peerId)
-	f.write("  Commitment raw TX: \n   " + commitmentTx)
+	fraudCommitmentTx = malicious.signLastTx(peerId)
+	f.write("  Commitment raw TX: \n   " + fraudCommitmentTx)
 
 
 	#6. Malicous pays 40k sats to victim
@@ -314,7 +314,7 @@ def Eclair():
 	f.write("  Commitment raw TX: \n   " + commitmentTx)
 
 	#7. Malicious broadcast previous state
-	res = bitcoin_core.sendRawTransaction(commitmentTx)
+	res = bitcoin_core.sendRawTransaction(fraudCommitmentTx)
 	f.write("\n\nMalicious broadcast previous state\n")
 	f.write("  Commitment transaction hash in hex: \n  " + res)
 
