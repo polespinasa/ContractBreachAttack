@@ -1,5 +1,9 @@
 from conf import *
 from nodes import *
+from coreLightning import *
+from lnd import *
+from eclair import *
+from bitcoinCore import *
 import docker
 
 

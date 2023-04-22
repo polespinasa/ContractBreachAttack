@@ -328,4 +328,4 @@ def Eclair():
 
 
 if __name__ == "__main__":
-	Eclair()
+	LND()
