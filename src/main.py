@@ -127,6 +127,9 @@ def LND():
 	f.write("\n\nPenalty transaction")
 	f.write("\nId: " + penaltyTx)
 
+	penaltyRaw = bitcoin_core.getRawTransaction(penaltyTx)
+	f.write("\nRaw: " + penaltyRaw)
+
 	f.close()
 	
 
@@ -244,6 +247,9 @@ def CLightning():
 	f.write("\n\nPenalty transaction")
 	f.write("\nId: " + penaltyTx)
 
+	penaltyRaw = bitcoin_core.getRawTransaction(penaltyTx)
+	f.write("\nRaw: " + penaltyRaw)
+
 	f.close()
 
 
@@ -360,8 +366,10 @@ def Eclair():
 	f.write("\n\nPenalty transaction")
 	f.write("\nId: " + penaltyTx)
 
+	penaltyRaw = bitcoin_core.getRawTransaction(penaltyTx)
+	f.write("\nRaw: " + penaltyRaw)
 	f.close()
 
 
 if __name__ == "__main__":
-	LND()
+	Eclair()
