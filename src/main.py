@@ -110,10 +110,22 @@ def LND():
 	f.write("  Commitment transaction hash in hex: \n  " + res)
 
 
-	#8. Mine 6 blocks to get the last tx confirmed
-	blocksHahs = bitcoin_core.mineNewBlocks(10)
-	f.write("\n\nBlocks hashes\n")
-	f.write('\n'.join(blocksHahs))
+	#8. Mine untill penalty transaction is in the blockchain
+	penalty = False
+	attackConfirmed = False
+	while not penalty:
+		blocksHash = bitcoin_core.mineNewBlocks(1)[0]
+		numTx = bitcoin_core.getBlockHeader(blocksHash)['nTx']
+
+		if numTx > 1:
+			if attackConfirmed:
+				penalty = True
+				penaltyTx = bitcoin_core.getBlock(blocksHash)['tx'][1]
+			else:
+				attackConfirmed = True
+
+	f.write("\n\nPenalty transaction")
+	f.write("\nId: " + penaltyTx)
 
 	f.close()
 	
@@ -215,10 +227,22 @@ def CLightning():
 	f.write("  Commitment transaction hash in hex: \n  " + res)
 
 
-	#8. Mine 6 blocks to get the last tx confirmed
-	blocksHahs = bitcoin_core.mineNewBlocks(10)
-	f.write("\n\nBlocks hashes\n")
-	f.write('\n'.join(blocksHahs))
+	#8. Mine untill penalty transaction is in the blockchain
+	penalty = False
+	attackConfirmed = False
+	while not penalty:
+		blocksHash = bitcoin_core.mineNewBlocks(1)[0]
+		numTx = bitcoin_core.getBlockHeader(blocksHash)['nTx']
+
+		if numTx > 1:
+			if attackConfirmed:
+				penalty = True
+				penaltyTx = bitcoin_core.getBlock(blocksHash)['tx'][1]
+			else:
+				attackConfirmed = True
+
+	f.write("\n\nPenalty transaction")
+	f.write("\nId: " + penaltyTx)
 
 	f.close()
 
@@ -319,10 +343,22 @@ def Eclair():
 	f.write("  Commitment transaction hash in hex: \n  " + res)
 
 
-	#8. Mine 6 blocks to get the last tx confirmed
-	blocksHahs = bitcoin_core.mineNewBlocks(10)
-	f.write("\n\nBlocks hashes\n")
-	f.write('\n'.join(blocksHahs))
+	#8. Mine untill penalty transaction is in the blockchain
+	penalty = False
+	attackConfirmed = False
+	while not penalty:
+		blocksHash = bitcoin_core.mineNewBlocks(1)[0]
+		numTx = bitcoin_core.getBlockHeader(blocksHash)['nTx']
+
+		if numTx > 1:
+			if attackConfirmed:
+				penalty = True
+				penaltyTx = bitcoin_core.getBlock(blocksHash)['tx'][1]
+			else:
+				attackConfirmed = True
+
+	f.write("\n\nPenalty transaction")
+	f.write("\nId: " + penaltyTx)
 
 	f.close()
 

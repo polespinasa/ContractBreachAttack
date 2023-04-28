@@ -124,3 +124,57 @@ class BitcoinCore(Node):
 		res = res.replace(' ', '').replace('\n','').replace('"','').replace('[','').replace(']','')
 		res = list(map(str, res.split(',')))
 		return res
+
+
+	def getBlockHeader(self, blockHash):
+		
+		'''
+		get header of a specific block
+	
+		Args:
+			blockHash (str): hash of the block that want to get the header
+	
+		Raises:
+			Exception: blockHash is not a string
+			
+		Returns:
+			dict: dictionary with all the block header information
+
+		'''
+
+		if not isinstance(blockHash, str):
+			raise Exception('Block hash must be a string')
+
+		command = self.__basicCommand + 'getblockheader ' + blockHash
+		res = self.forceLinuxCommand(command)
+
+		jsonres = json.loads(res)
+
+		return jsonres
+
+
+	def getBlock(self, blockHash):
+		
+		'''
+		get full block from a block hash
+	
+		Args:
+			blockHash (str): hash of the block that want to take
+	
+		Raises:
+			Exception: blockHash is not a string
+			
+		Returns:
+			dict: dictionary with all the information inside the block
+
+		'''
+
+		if not isinstance(blockHash, str):
+			raise Exception('Block hash must be a string')
+
+		command = self.__basicCommand + 'getblock ' + blockHash
+		res = self.forceLinuxCommand(command)
+
+		jsonres = json.loads(res)
+
+		return jsonres
