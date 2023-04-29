@@ -57,6 +57,19 @@ class Node:
 		return res
 
 
+	def pause(self):
+		'''
+		Pause a node
+
+		Args:
+
+		Returns:
+			Bool: True if there was no errors when pausing
+		'''
+
+		return self.manager.pause(self.name)
+
+
 
 
 

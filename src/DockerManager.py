@@ -127,3 +127,25 @@ class DockerManager:
 		commandOutput = commandResult.output
 		
 		return commandOutput.decode(), commandResult.exit_code
+
+
+	def pause(self, name):
+		'''
+		Pause a specific container
+
+		Args:
+			name(str): container name
+
+		Returns:
+			bool: True if was correctly paused
+
+		'''
+
+		container = self.__getContainer(name)
+
+		try:
+			container.pause()
+		except:
+			return False
+
+		return True
